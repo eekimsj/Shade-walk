@@ -1,0 +1,893 @@
+<!--HEAD--><title>__APP_NAME__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#E6E7E1; --bldg:#CBC6BC; --bldg-edge:#978F84; --walk:#FBFBF8; --shadow:#34405C;
+  --tree:#6F8A5A; --maroon:#500000; --maroon-hi:#7D1A20; --sun:#DE8F1F; --ink:#1E1C1B;
+  --muted:#6B6761; --panel:#F7F7F4; --line:#D9D7D0; --chip:#ECEBE5; --focus:#B5651D;
+  --shadow-alpha:.42;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#16181B; --bldg:#35373C; --bldg-edge:#4D5057; --walk:#2A2D32; --shadow:#000000;
+    --tree:#4E6A3E; --maroon:#C9545A; --maroon-hi:#E07A7F; --sun:#F2AE48; --ink:#ECEAE5;
+    --muted:#9C988F; --panel:#1C1E21; --line:#2F3237; --chip:#26292D; --focus:#F2AE48;
+    --shadow-alpha:.55;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#16181B; --bldg:#35373C; --bldg-edge:#4D5057; --walk:#2A2D32; --shadow:#000000;
+  --tree:#4E6A3E; --maroon:#C9545A; --maroon-hi:#E07A7F; --sun:#F2AE48; --ink:#ECEAE5;
+  --muted:#9C988F; --panel:#1C1E21; --line:#2F3237; --chip:#26292D; --focus:#F2AE48;
+  --shadow-alpha:.55;
+}
+html,body{height:100%}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,select,input,label,.chip{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body{background:var(--panel);color:var(--ink);font:14px/1.45 var(--sans);overflow:hidden}
+.app{display:grid;grid-template-columns:360px 1fr;height:100%}
+aside{border-right:1px solid var(--line);overflow-y:auto;padding:20px 18px 24px;display:flex;flex-direction:column;gap:18px;background:var(--panel)}
+.brand .eyebrow{font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.brand h1{font:700 34px/1 var(--display);letter-spacing:.01em;text-transform:uppercase;margin:6px 0 6px;color:var(--maroon);text-wrap:balance}
+.brand p{margin:0;color:var(--muted);font-size:13px;max-width:36ch}
+.group{display:flex;flex-direction:column;gap:8px}
+.label{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.field{display:grid;grid-template-columns:28px 1fr;align-items:center;gap:8px}
+.pin{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:600 12px/1 var(--mono);color:#fff;border:2px solid transparent;cursor:pointer;padding:0}
+.pin.a{background:#2F6B4F}.pin.b{background:var(--maroon)}
+.pin[aria-pressed="true"]{outline:2px solid var(--focus);outline-offset:2px}
+select,input[type=date]{width:100%;font:14px var(--sans);color:var(--ink);background:var(--ground);border:1px solid var(--line);border-radius:6px;padding:8px 10px;min-width:0}
+.hint{font-size:12px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 12px var(--sans);background:var(--chip);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer}
+.chip:hover{border-color:var(--muted)}
+.timebox{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.clock{font:600 30px/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.row{display:flex;gap:6px;align-items:center}
+.btn{font:500 12px var(--sans);background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--maroon)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{font:500 12px var(--sans);background:transparent;color:var(--muted);border:0;padding:7px 4px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--maroon);color:#fff}
+.toggle{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;flex-wrap:wrap}
+.toggle input{accent-color:var(--maroon);width:16px;height:16px;margin:0}
+.tabs{grid-template-columns:1fr 1fr}
+.tabs button{font-size:13px;padding:9px 4px}
+body:not([data-tab="bus"]) .bus-only, body[data-tab="bus"] .walk-only{display:none!important}
+.card.pick{border-color:var(--maroon);border-width:2px;padding:9px 11px}
+.card .tag{font:500 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--maroon);border-radius:3px;padding:3px 5px;margin-left:auto}
+.seat{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.seat svg{width:58px;height:96px}
+.seat .big{font-size:30px}
+.btn.geo{align-self:flex-start;display:inline-flex;align-items:center;gap:6px}
+.btn.geo::before{content:"";width:8px;height:8px;border-radius:50%;background:#2F6B4F;box-shadow:0 0 0 3px rgb(47 107 79 / .25)}
+.geomsg{margin:0}
+.sunline{font:400 12px/1.4 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.result{border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:12px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.card.main{border-color:var(--maroon)}
+button.card{font:inherit;color:inherit;text-align:left;background:transparent;cursor:pointer;width:100%;min-width:0}
+button.card:hover{border-color:var(--muted)}
+.card.sel,button.card.sel:hover{border-color:var(--maroon);box-shadow:inset 0 0 0 1px var(--maroon)}
+.card .pickhint{font:400 11px/1.3 var(--sans);color:var(--muted)}
+.card h3{margin:0;font:600 13px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.swatch{width:18px;height:0;border-top:3px solid var(--maroon)}
+.swatch.dash{border-top:3px dashed var(--muted)}
+.big{font:600 28px/1 var(--display);font-variant-numeric:tabular-nums}
+.big small{font:500 13px var(--sans);color:var(--muted);margin-left:2px}
+.kv{font:400 12px/1.5 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:3px;background:var(--sun);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--shadow);opacity:.85}
+.verdict{font-size:13px;margin:0}
+.verdict b{color:var(--maroon)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 14px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.lg{width:14px;height:10px;border-radius:2px;display:inline-block}
+.foot a{color:inherit}
+.foot{font-size:11px;color:var(--muted);margin-top:auto;line-height:1.5}
+.mapwrap{position:relative;min-width:0;min-height:0;background:var(--ground)}
+canvas#map{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab;display:block}
+canvas#map.dragging{cursor:grabbing}
+.compass{position:absolute;right:14px;top:14px;width:64px;height:64px;pointer-events:none}
+.night{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:12px}
+.zoom{position:absolute;right:14px;bottom:14px;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel)}
+.zoom button{width:34px;height:34px;border:0;background:transparent;color:var(--ink);font:500 18px var(--sans);cursor:pointer}
+.zoom button+button{border-top:1px solid var(--line)}
+.tip{position:absolute;left:14px;bottom:14px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--muted);max-width:calc(100% - 90px)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.pill{display:none}
+@media (max-width:760px){
+  /* Phone: the page scrolls as a document, the map stays pinned on top, and a summary pill on the map keeps the answer in view */
+  html,body{height:auto}
+  body{overflow:visible}
+  .app{display:flex;flex-direction:column;height:auto}
+  .mapwrap{order:-1;flex:none;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;height:44vh;height:44svh;min-height:250px;border-bottom:1px solid var(--line)}
+  aside{border-right:0;overflow:visible;padding:16px 16px calc(24px + env(safe-area-inset-bottom,0px));gap:20px}
+  .brand h1{font-size:28px;margin:4px 0 0}
+  .brand p{display:none}
+  select,input[type=date]{font-size:16px;padding:10px 12px;min-height:44px}
+  .pin{width:32px;height:32px;font-size:13px}
+  .field{grid-template-columns:36px 1fr}
+  .chip{font-size:13px;padding:8px 12px;min-height:36px}
+  .btn{min-height:36px;padding:8px 12px;font-size:13px}
+  .seg button{min-height:42px;font-size:13px}
+  .tabs button{min-height:44px;font-size:14px}
+  .toggle{min-height:36px}
+  .toggle input{width:20px;height:20px}
+  input[type=range]{height:32px}
+  .zoom{right:10px;bottom:10px}
+  .zoom button{width:40px;height:40px}
+  .compass{width:52px;height:52px;right:10px;top:10px}
+  .night{left:10px;top:10px;transform:none;max-width:calc(100% - 80px)}
+  .tip{display:none}
+  .pill{display:flex;align-items:center;gap:8px;position:absolute;left:10px;bottom:10px;max-width:calc(100% - 70px);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 12px 7px 8px;font-size:13px;line-height:1.2;box-shadow:0 2px 8px rgb(0 0 0 / .18)}
+  .pill b{font:600 17px/1 var(--display);color:var(--maroon);font-variant-numeric:tabular-nums}
+  .pill .dot{width:10px;height:10px;border-radius:50%;background:var(--maroon);flex:none}
+  .pill span{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .foot a{color:inherit}
+.foot{margin-top:0}
+}
+@media (max-width:760px) and (max-height:500px){
+  .mapwrap{height:60vh;height:60svh;min-height:0}
+}
+</style>
+
+<div class="app">
+  <aside>
+    <div class="brand">
+      <div class="eyebrow">College Station, TX · Beta</div>
+      <h1>__APP_NAME__</h1>
+      <p>Finds the walking route and the bus seat that keep you out of the Texas sun, using building and tree shadows computed for the exact date and time.</p>
+    </div>
+
+    <div class="seg tabs" id="tabs" role="group" aria-label="Mode">
+      <button data-tab="walk" aria-pressed="true">Walk</button>
+      <button data-tab="bus" aria-pressed="false">Ride the bus</button>
+    </div>
+
+    <div class="group bus-only">
+      <div class="label"><span>Aggie Spirit ride</span></div>
+      <select id="busRoute" aria-label="Bus route"></select>
+      <div class="field"><span class="pin a" aria-hidden="true">A</span><select id="busFrom" aria-label="Board at"></select></div>
+      <div class="field"><span class="pin b" aria-hidden="true">B</span><select id="busTo" aria-label="Get off at"></select></div>
+      <button type="button" class="btn geo" id="geoBus">Board at the stop nearest me</button>
+      <p class="hint geomsg" id="geoBusMsg" hidden></p>
+    </div>
+
+    <div class="group walk-only">
+      <div class="label"><span>Route</span><span class="hint" id="pickHint">Tap a pin, then the map</span></div>
+      <div class="field">
+        <button class="pin a" id="pinA" aria-pressed="false" title="Pick start on map">A</button>
+        <select id="from" aria-label="Start"></select>
+      </div>
+      <div class="field">
+        <button class="pin b" id="pinB" aria-pressed="false" title="Pick destination on map">B</button>
+        <select id="to" aria-label="Destination"></select>
+      </div>
+      <div class="chips" id="presets"></div>
+      <button type="button" class="btn geo" id="geoWalk">Start from my location</button>
+      <p class="hint geomsg" id="geoWalkMsg" hidden></p>
+    </div>
+
+    <div class="group">
+      <div class="label"><span>When</span><span class="row"><button class="btn" id="nowBtn">Now</button><button class="btn" id="playBtn" aria-pressed="false">Play day</button></span></div>
+      <div class="timebox"><div class="clock" id="clock">2:30 PM</div><input type="date" id="date" aria-label="Date" style="max-width:160px"></div>
+      <input type="range" id="time" min="360" max="1230" step="5" value="870" aria-label="Time of day">
+      <div class="sunline" id="sunline"></div>
+    </div>
+
+    <div class="group">
+      <div class="label walk-only"><span>How much do you hate the sun?</span></div>
+      <div class="seg walk-only" id="mode">
+        <button data-k="0.8" aria-pressed="false">A little</button>
+        <button data-k="2.5" aria-pressed="true">A lot</button>
+        <button data-k="6" aria-pressed="false">It's August</button>
+      </div>
+      <label class="toggle" for="trees"><input type="checkbox" id="trees" checked> Count tree shade <span class="hint">(turn off to see buildings alone)</span></label>
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <div class="legend">
+      <span><i class="lg" style="background:var(--shadow);opacity:.6"></i>Shadow</span>
+      <span><i class="lg" style="background:var(--tree);opacity:.7"></i>Tree canopy</span>
+      <span class="walk-only"><i class="lg" style="background:var(--maroon)"></i>Selected route, in shade</span>
+      <span class="walk-only"><i class="lg" style="background:var(--sun)"></i>Selected route, in sun</span>
+      <span class="walk-only"><i class="swatch dash"></i>Other route</span>
+      <span class="bus-only"><i class="lg" style="background:var(--maroon)"></i>Selected window in shade</span>
+      <span class="bus-only"><i class="lg" style="background:var(--sun)"></i>Selected window in sun</span>
+      <span class="bus-only"><i class="swatch dash"></i>Rest of the route</span>
+    </div>
+
+    <p class="foot">Unofficial student project, not affiliated with or endorsed by Texas A&amp;M University or Transportation Services. No sign-in and no tracking; if you use your location, it stays on your phone.<br><br>
+Map data, walkways and Aggie Spirit route lines © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL). Community-mapped routes can lag behind current service, so check the official Aggie Spirit app before you ride; where a mapped route had breaks, the missing stretch follows the shortest road path, checked against City of College Station and TAMU bus-road layers.
+Building heights from <a href="https://www.usgs.gov/3d-elevation-program" target="_blank" rel="noopener">USGS 3DEP</a> lidar flown in 2018 (buildings newer than that use estimates).
+Tree canopy from <a href="https://registry.opendata.aws/dataforgood-fb-forestsv2/" target="_blank" rel="noopener">High Resolution Canopy Height Maps v2</a> by Meta and WRI (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>), resampled to 2 m; it can miss recent plantings or removals and treats each crown as solid shade.
+Off campus, bus-ride shade is precomputed in a 150 m band along each route for sun positions in 15° × 10° steps. Shade estimates are a guide, not a heat-safety tool: carry water and take breaks.</p>
+  </aside>
+
+  <div class="mapwrap" id="mapwrap">
+    <canvas id="map" aria-label="Campus map with shadows and routes"></canvas>
+    <svg class="compass" viewBox="0 0 64 64" aria-hidden="true">
+      <circle cx="32" cy="32" r="28" fill="var(--panel)" stroke="var(--line)"/>
+      <text x="32" y="14" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="var(--muted)">N</text>
+      <g id="sunMark"><line x1="32" y1="32" x2="32" y2="10" stroke="var(--sun)" stroke-width="2"/><circle cx="32" cy="10" r="5" fill="var(--sun)"/></g>
+    </svg>
+    <div class="night" id="night" hidden>Sun is down. Every route is a shade route.</div>
+    <div class="zoom"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button></div>
+    <div class="tip" id="tip">Drag to pan · scroll or pinch to zoom</div>
+    <div class="pill" id="pill" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+const CAMPUS = /*CAMPUS*/null;
+const BUS = /*BUS*/null;
+(async function(){
+"use strict";
+const [LAT0, LON0] = CAMPUS.origin;
+const WALK = 1.34; // m/s, about 3 mph
+
+// ---------- data ----------
+const B = CAMPUS.b.map(([h, est, name, flat]) => {
+  const pts = []; let cx = 0, cy = 0, minx=1e9,maxx=-1e9,miny=1e9,maxy=-1e9;
+  for (let i = 0; i < flat.length; i += 2) { const x = flat[i], y = flat[i+1]; pts.push([x, y]); cx += x; cy += y;
+    if(x<minx)minx=x; if(x>maxx)maxx=x; if(y<miny)miny=y; if(y>maxy)maxy=y; }
+  cx /= pts.length; cy /= pts.length;
+  const path = new Path2D(); pts.forEach((p, i) => i ? path.lineTo(p[0], p[1]) : path.moveTo(p[0], p[1])); path.closePath();
+  let sa = 0; for (let i = 0; i < pts.length; i++) { const [x1,y1] = pts[i], [x2,y2] = pts[(i+1)%pts.length]; sa += x1*y2 - x2*y1; }
+  return { h, est, name, pts, cx, cy, path, ccw: sa > 0, area:(maxx-minx)*(maxy-miny) };
+});
+// Tree canopy: 2 m grid of canopy heights (Meta/WRI CHM v2), split into height bands so each band casts one offset stack
+const CAN = CAMPUS.c;
+const BANDS = [[3,5],[5,7],[7,9],[9,12],[12,16],[16,41]].map(([lo, hi]) => ({ lo, hi, h: (lo + Math.min(hi, 22))/2, cv: null }));
+let canopyView = null, canopyCells = 0, CH = null;
+const canopyReady = new Promise(res => {
+  const img = new Image();
+  img.onload = () => {
+    const c = document.createElement("canvas"); c.width = CAN.w; c.height = CAN.h;
+    const cx = c.getContext("2d"); cx.drawImage(img, 0, 0);
+    const src = cx.getImageData(0, 0, CAN.w, CAN.h).data; c.width = c.height = 0; // free decode canvas (iOS caps total canvas memory)
+    CH = new Uint8Array(CAN.w*CAN.h); for (let i = 0; i < CH.length; i++) CH[i] = src[4*i];
+    for (const band of BANDS) {
+      band.cv = document.createElement("canvas"); band.cv.width = CAN.w; band.cv.height = CAN.h;
+      const bx = band.cv.getContext("2d"), id = bx.createImageData(CAN.w, CAN.h);
+      for (let i = 0, j = 0; i < src.length; i += 4, j++) { const h = src[i]; if (h >= band.lo && h < band.hi) { id.data[i+3] = 255; canopyCells++; } }
+      bx.putImageData(id, 0, 0);
+    }
+    canopyView = document.createElement("canvas"); canopyView.width = CAN.w; canopyView.height = CAN.h;
+    res();
+  };
+  img.onerror = () => res();
+  img.src = "data:image/png;base64," + CAN.png;
+});
+function paintCanopyView() {
+  if (!canopyView) return;
+  const v = canopyView.getContext("2d"); v.globalCompositeOperation = "source-over"; v.clearRect(0, 0, CAN.w, CAN.h);
+  BANDS.forEach(b => v.drawImage(b.cv, 0, 0));
+  v.globalCompositeOperation = "source-in"; v.fillStyle = css("--tree"); v.fillRect(0, 0, CAN.w, CAN.h);
+}
+const NX = new Float32Array(CAMPUS.n.length/2), NY = new Float32Array(CAMPUS.n.length/2);
+for (let i = 0; i < NX.length; i++) { NX[i] = CAMPUS.n[2*i]; NY[i] = CAMPUS.n[2*i+1]; }
+const NE = CAMPUS.e.length/2, EA = new Int32Array(NE), EB = new Int32Array(NE), ELEN = new Float32Array(NE), ESHADE = new Float32Array(NE);
+const deg = new Int32Array(NX.length+1);
+for (let i = 0; i < NE; i++) { const a = CAMPUS.e[2*i], b = CAMPUS.e[2*i+1]; EA[i]=a; EB[i]=b; ELEN[i]=Math.hypot(NX[a]-NX[b], NY[a]-NY[b]); deg[a+1]++; deg[b+1]++; }
+for (let i = 1; i < deg.length; i++) deg[i] += deg[i-1];
+const ADJ = new Int32Array(NE*2), fill = deg.slice(0, -1);
+for (let i = 0; i < NE; i++) { ADJ[fill[EA[i]]++] = i; ADJ[fill[EB[i]]++] = i; }
+const walkPath = new Path2D(); for (let i = 0; i < NE; i++) { walkPath.moveTo(NX[EA[i]], NY[EA[i]]); walkPath.lineTo(NX[EB[i]], NY[EB[i]]); }
+
+let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+for (let i = 0; i < NX.length; i++) { minX=Math.min(minX,NX[i]); maxX=Math.max(maxX,NX[i]); minY=Math.min(minY,NY[i]); maxY=Math.max(maxY,NY[i]); }
+B.forEach(b => b.pts.forEach(([x,y]) => { minX=Math.min(minX,x); maxX=Math.max(maxX,x); minY=Math.min(minY,y); maxY=Math.max(maxY,y); }));
+minX = Math.floor(minX) - 20; minY = Math.floor(minY) - 20; maxX = Math.ceil(maxX) + 20; maxY = Math.ceil(maxY) + 20;
+const GW = maxX - minX, GH = maxY - minY; // 1 px = 1 m
+
+const nearestNode = (x, y) => { let best = 0, bd = Infinity; for (let i = 0; i < NX.length; i++) { const d = (NX[i]-x)**2 + (NY[i]-y)**2; if (d < bd) { bd = d; best = i; } } return best; };
+
+// Places: named buildings, largest footprint per name
+const placeMap = new Map();
+B.forEach(b => { if (!b.name) return; const p = placeMap.get(b.name); if (!p || p.area < b.area) placeMap.set(b.name, b); });
+const PLACES = [...placeMap.values()].sort((a, b) => a.name.localeCompare(b.name)).map(b => ({ name: b.name, x: b.cx, y: b.cy }));
+PLACES.forEach(p => p.node = nearestNode(p.x, p.y));
+const LABELS = [...placeMap.values()].filter(b => b.area > 3500).sort((a,b) => b.area - a.area);
+
+// ---------- sun position (after SunCalc, V. Agafonkin) ----------
+const rad = Math.PI/180, e = rad*23.4397;
+function sunPos(ms, lat, lng) {
+  const d = ms/864e5 - 0.5 + 2440588 - 2451545;
+  const M = rad*(357.5291 + 0.98560028*d);
+  const C = rad*(1.9148*Math.sin(M) + 0.02*Math.sin(2*M) + 0.0003*Math.sin(3*M));
+  const L = M + C + rad*102.9372 + Math.PI;
+  const dec = Math.asin(Math.sin(e)*Math.sin(L));
+  const ra = Math.atan2(Math.sin(L)*Math.cos(e), Math.cos(L));
+  const phi = rad*lat, H = rad*(280.16 + 360.9856235*d) + rad*lng - ra;
+  const alt = Math.asin(Math.sin(phi)*Math.sin(dec) + Math.cos(phi)*Math.cos(dec)*Math.cos(H));
+  const az = Math.atan2(Math.sin(H), Math.cos(H)*Math.sin(phi) - Math.tan(dec)*Math.cos(phi)) + Math.PI; // from north, clockwise
+  return { alt, az };
+}
+// Central Time: CDT from 2nd Sunday of March to 1st Sunday of November
+function centralOffset(y, m, d) {
+  const nthSun = (mon, n) => { const first = new Date(Date.UTC(y, mon, 1)).getUTCDay(); return 1 + (7 - first) % 7 + 7*(n-1); };
+  const start = Date.UTC(y, 2, nthSun(2, 2)), end = Date.UTC(y, 10, nthSun(10, 1)), t = Date.UTC(y, m-1, d);
+  return (t >= start && t < end) ? 5 : 6;
+}
+function centralNow() {
+  const n = new Date(); const guess = new Date(n.getTime() - 6*3600e3);
+  const off = centralOffset(guess.getUTCFullYear(), guess.getUTCMonth()+1, guess.getUTCDate());
+  const c = new Date(n.getTime() - off*3600e3);
+  return { y: c.getUTCFullYear(), m: c.getUTCMonth()+1, d: c.getUTCDate(), min: c.getUTCHours()*60 + c.getUTCMinutes() };
+}
+
+// ---------- shadow raster ----------
+// Shadows are built by stamping pre-rendered footprints along the sun's shadow direction (a swept footprint = its cast shadow).
+const mask = document.createElement("canvas"); mask.width = GW; mask.height = GH;
+const mctx = mask.getContext("2d");
+let sun = { alt: 1, az: 0 };
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+// Building heights: 1 m grid measured from USGS 3DEP lidar (roof minus surrounding ground), clipped to OSM footprints.
+// HB is that grid re-indexed to the mask frame; BBANDS are 2 m display stamps grouped into 4 m height bands.
+const BH = CAMPUS.bh;
+let HB = new Uint8Array(GW*GH), BBANDS = [], MAXH = 25;
+const heightsReady = new Promise(res => {
+  const img = new Image();
+  img.onload = () => {
+    const c = document.createElement("canvas"); c.width = BH.w; c.height = BH.h;
+    const cx = c.getContext("2d", { willReadFrequently: true }); cx.drawImage(img, 0, 0);
+    const src = cx.getImageData(0, 0, BH.w, BH.h).data; c.width = c.height = 0;
+    const offX = minX - BH.x0, offY = BH.y1 - maxY;
+    for (let gy = 0; gy < GH; gy++) { const by = gy + offY; if (by < 0 || by >= BH.h) continue;
+      for (let gx = 0; gx < GW; gx++) { const bx = gx + offX; if (bx >= 0 && bx < BH.w) { const h = src[4*(by*BH.w + bx)]; HB[gy*GW + gx] = h; if (h > MAXH) MAXH = h; } } }
+    // 2 m blocks, height = max of the block, grouped by 4 m band
+    const bw = Math.ceil(BH.w/2), bh = Math.ceil(BH.h/2), blk = new Uint8Array(bw*bh);
+    for (let y = 0; y < BH.h; y++) for (let x = 0; x < BH.w; x++) { const h = src[4*(y*BH.w + x)], k = (y>>1)*bw + (x>>1); if (h > blk[k]) blk[k] = h; }
+    const groups = new Map();
+    for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) { const h = blk[y*bw + x]; if (h < 3) continue; const g = h >> 2;
+      let e = groups.get(g); if (!e) groups.set(g, e = { cells: [], x0: 1e9, x1: -1, y0: 1e9, y1: -1 });
+      e.cells.push(x, y); if (x < e.x0) e.x0 = x; if (x > e.x1) e.x1 = x; if (y < e.y0) e.y0 = y; if (y > e.y1) e.y1 = y; }
+    BBANDS = [...groups].map(([g, e]) => {
+      const cv = document.createElement("canvas"); cv.width = e.x1 - e.x0 + 1; cv.height = e.y1 - e.y0 + 1;
+      const x = cv.getContext("2d"), id = x.createImageData(cv.width, cv.height);
+      for (let i = 0; i < e.cells.length; i += 2) id.data[4*((e.cells[i+1] - e.y0)*cv.width + e.cells[i] - e.x0) + 3] = 255;
+      x.putImageData(id, 0, 0);
+      return { h: g*4 + 2, cv, ox: BH.x0 + e.x0*2 - minX, oy: maxY - BH.y1 + e.y0*2 };
+    });
+    res();
+  };
+  img.onerror = () => res();
+  img.src = "data:image/png;base64," + BH.png;
+});
+
+function renderShadows() {
+  mctx.setTransform(1,0,0,1,0,0); mctx.globalCompositeOperation = "source-over"; mctx.clearRect(0,0,GW,GH);
+  mctx.fillStyle = css("--shadow");
+  if (sun.alt <= 0) { mctx.fillRect(0,0,GW,GH); return; }
+  const t = Math.min(1/Math.tan(sun.alt), 25);
+  const ux = -Math.sin(sun.az)*t, uy = -Math.cos(sun.az)*t; // shadow offset per metre of height
+  for (const band of BBANDS) {
+    const steps = Math.min(160, Math.max(1, Math.ceil(t*band.h/1.5)));
+    for (let s = 0; s <= steps; s++) { const z = band.h*s/steps; mctx.drawImage(band.cv, band.ox + ux*z, band.oy - uy*z, band.cv.width*2, band.cv.height*2); }
+  }
+  // Trees: a crown fills roughly 35%–100% of tree height, so each band's canopy is swept from 0.35h to h
+  if (st.trees && canopyView) {
+    const ox = CAN.x0 - minX, oy = maxY - CAN.y1, sw = CAN.w*CAN.res, sh = CAN.h*CAN.res;
+    for (const band of BANDS) {
+      const lo = 0.35*band.h, hi = band.h, steps = Math.min(40, Math.max(1, Math.ceil(t*(hi - lo)/CAN.res)));
+      for (let s = 0; s <= steps; s++) { const z = lo + (hi - lo)*s/steps; mctx.drawImage(band.cv, ox + ux*z, oy - uy*z, sw, sh); }
+    }
+  }
+  mctx.globalCompositeOperation = "source-in"; mctx.fillRect(0, 0, GW, GH); mctx.globalCompositeOperation = "source-over";
+}
+
+// A point is shaded when the ray toward the sun passes below a roof, or through a tree crown (35%–100% of tree height)
+function shadedAt(x, y) {
+  if (sun.alt <= 0) return 1;
+  const tanA = Math.tan(sun.alt), dx = Math.sin(sun.az), dy = Math.cos(sun.az);
+  const maxS = Math.min(400, MAXH/tanA), step = Math.min(1, 1.5/tanA), trees = st.trees && CH;
+  for (let s = 0; s <= maxS; s += step) {
+    const px = x + dx*s, py = y + dy*s, z = s*tanA;
+    const gx = (px - minX)|0, gy = (maxY - py)|0;
+    if (gx >= 0 && gy >= 0 && gx < GW && gy < GH && HB[gy*GW + gx] > z) return 1;
+    if (trees) {
+      const cx = ((px - CAN.x0)/CAN.res)|0, cy = ((CAN.y1 - py)/CAN.res)|0;
+      if (cx >= 0 && cy >= 0 && cx < CAN.w && cy < CAN.h) { const h = CH[cy*CAN.w + cx]; if (h && z < h && z > 0.35*h) return 1; }
+    }
+  }
+  return 0;
+}
+function scoreEdges() {
+  for (let i = 0; i < NE; i++) {
+    const a = EA[i], b = EB[i], L = ELEN[i], n = Math.max(1, Math.ceil(L/2)); let s = 0;
+    for (let k = 0; k < n; k++) { const t = (k + .5)/n; s += shadedAt(NX[a] + (NX[b]-NX[a])*t, NY[a] + (NY[b]-NY[a])*t); }
+    ESHADE[i] = L * s / n;
+  }
+}
+
+// ---------- routing ----------
+function dijkstra(src, dst, k) {
+  const N = NX.length, dist = new Float64Array(N).fill(Infinity), prevE = new Int32Array(N).fill(-1);
+  const heap = [[0, src]]; dist[src] = 0;
+  const push = it => { heap.push(it); let i = heap.length-1; while (i) { const p = (i-1)>>1; if (heap[p][0] <= heap[i][0]) break; [heap[p],heap[i]]=[heap[i],heap[p]]; i=p; } };
+  const pop = () => { const top = heap[0], last = heap.pop(); if (heap.length) { heap[0] = last; let i = 0; for(;;){ const l=2*i+1,r=l+1; let m=i; if(l<heap.length&&heap[l][0]<heap[m][0])m=l; if(r<heap.length&&heap[r][0]<heap[m][0])m=r; if(m===i)break; [heap[m],heap[i]]=[heap[i],heap[m]]; i=m; } } return top; };
+  while (heap.length) {
+    const [d, u] = pop(); if (d > dist[u]) continue; if (u === dst) break;
+    for (let j = deg[u]; j < deg[u+1]; j++) {
+      const ei = ADJ[j], v = EA[ei] === u ? EB[ei] : EA[ei];
+      const c = ESHADE[ei] + (ELEN[ei] - ESHADE[ei])*(1 + k);
+      if (d + c < dist[v]) { dist[v] = d + c; prevE[v] = ei; push([d + c, v]); }
+    }
+  }
+  if (!isFinite(dist[dst])) return null;
+  const nodes = [dst], edges = []; let u = dst, len = 0, shade = 0;
+  while (u !== src) { const ei = prevE[u]; edges.push(ei); len += ELEN[ei]; shade += ESHADE[ei]; u = EA[ei] === u ? EB[ei] : EA[ei]; nodes.push(u); }
+  return { nodes: nodes.reverse(), len, shade };
+}
+
+// ---------- state ----------
+const $ = id => document.getElementById(id);
+const st = { sel: "shady", tab: "walk", bus: { r: 0, a: 0, b: 0, side: null }, ride: null, trees: true, from: null, to: null, k: 2.5, pick: null, date: null, min: 870, shortest: null, shady: null };
+const view = { cx: 0, cy: 0, s: 1 };
+const canvas = $("map"), ctx = canvas.getContext("2d");
+let W = 0, H = 0, DPR = 1;
+
+function placeOpt(sel) {
+  sel.innerHTML = '<option value="custom" hidden>Point on map</option>' + PLACES.map((p, i) => `<option value="${i}">${p.name.replace(/&/g,"&amp;").replace(/</g,"&lt;")}</option>`).join("");
+}
+placeOpt($("from")); placeOpt($("to"));
+const byName = n => PLACES.findIndex(p => p.name === n);
+function setEnd(which, idx, pt) {
+  const sel = which === "from" ? $("from") : $("to");
+  if (idx >= 0) { st[which] = { ...PLACES[idx] }; sel.value = String(idx); }
+  else { st[which] = { name: "Point on map", x: pt.x, y: pt.y, node: nearestNode(pt.x, pt.y) }; sel.value = "custom"; }
+}
+$("from").addEventListener("change", e => { setEnd("from", +e.target.value); route(); });
+$("to").addEventListener("change", e => { setEnd("to", +e.target.value); route(); });
+
+const PRESETS = [
+  ["Memorial Student Center", "Zachry Engineering Education Complex", "MSC → Zachry"],
+  ["Sterling C. Evans Library", "Student Recreation Center", "Evans → Rec"],
+  ["Kyle Field", "Academic Building", "Kyle Field → Academic"],
+  ["Sbisa Dining Hall", "Rudder Tower", "Sbisa → Rudder"],
+];
+$("presets").innerHTML = PRESETS.filter(p => byName(p[0]) >= 0 && byName(p[1]) >= 0).map(p => `<button class="chip" data-a="${p[0]}" data-b="${p[1]}">${p[2]}</button>`).join("");
+$("presets").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; setEnd("from", byName(b.dataset.a)); setEnd("to", byName(b.dataset.b)); route(true); });
+
+function setPick(w) {
+  st.pick = st.pick === w ? null : w;
+  $("pinA").setAttribute("aria-pressed", st.pick === "from"); $("pinB").setAttribute("aria-pressed", st.pick === "to");
+  $("pickHint").textContent = st.pick ? `Tap the map to set ${st.pick === "from" ? "start" : "destination"}` : "Tap a pin, then the map";
+}
+$("pinA").onclick = () => setPick("from"); $("pinB").onclick = () => setPick("to");
+
+document.querySelectorAll("#mode button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#mode button").forEach(x => x.setAttribute("aria-pressed", x === b)); st.k = +b.dataset.k; route();
+});
+
+const fmtTime = m => { const h = Math.floor(m/60), mm = m % 60; return `${(h+11)%12+1}:${String(mm).padStart(2,"0")} ${h < 12 ? "AM" : "PM"}`; };
+const COMPASS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+function updateSun() {
+  const [y, m, d] = st.date.split("-").map(Number);
+  const ms = Date.UTC(y, m-1, d, Math.floor(st.min/60), st.min % 60) + centralOffset(y, m, d)*3600e3;
+  sun = sunPos(ms, LAT0, LON0);
+  $("clock").textContent = fmtTime(st.min);
+  const altD = sun.alt/rad, azD = (sun.az/rad + 360) % 360;
+  $("sunline").textContent = altD > 0
+    ? `Sun ${altD.toFixed(0)}° up from the ${COMPASS[Math.round(azD/22.5)%16]} (${azD.toFixed(0)}°) · a 10 m building casts ${(10/Math.tan(sun.alt)).toFixed(0)} m of shade`
+    : `Sun below horizon (${altD.toFixed(0)}°)`;
+  $("sunMark").setAttribute("transform", `rotate(${azD} 32 32)`);
+  $("sunMark").style.opacity = altD > 0 ? 1 : .25;
+  $("night").hidden = altD > 0;
+  renderShadows(); scoreEdges();
+}
+let timeFrame = 0;
+$("time").addEventListener("input", e => {
+  st.min = +e.target.value; $("clock").textContent = fmtTime(st.min);
+  if (!timeFrame) timeFrame = requestAnimationFrame(() => { timeFrame = 0; updateSun(); route(); });
+});
+$("date").addEventListener("change", e => { if (e.target.value) { st.date = e.target.value; updateSun(); route(); } });
+function setNow() {
+  const c = centralNow(); st.date = `${c.y}-${String(c.m).padStart(2,"0")}-${String(c.d).padStart(2,"0")}`;
+  st.min = Math.min(1230, Math.max(360, Math.round(c.min/5)*5)); $("date").value = st.date; $("time").value = st.min;
+}
+$("nowBtn").onclick = () => { setNow(); updateSun(); route(); };
+
+let playTimer = null;
+$("playBtn").onclick = () => {
+  if (playTimer) { clearInterval(playTimer); playTimer = null; $("playBtn").textContent = "Play day"; $("playBtn").setAttribute("aria-pressed", false); return; }
+  if (st.min >= 1200) st.min = 420;
+  $("playBtn").textContent = "Pause"; $("playBtn").setAttribute("aria-pressed", true);
+  playTimer = setInterval(() => { st.min += 10; if (st.min > 1230) { $("playBtn").click(); return; } $("time").value = st.min; updateSun(); route(); }, 180);
+};
+if (matchMedia("(prefers-reduced-motion: reduce)").matches) $("playBtn").hidden = true;
+
+// ---------- routes + panel ----------
+const fmtMi = m => { const mi = m/1609.34; return mi < 0.1 ? `${Math.round(m*3.281)} ft` : `${mi.toFixed(2)} mi`; };
+const mins = m => Math.max(1, Math.round(m/WALK/60));
+function route(fit) {
+  if (st.tab === "bus") { busUpdate(fit); return; }
+  if (!st.from || !st.to) return;
+  st.shortest = dijkstra(st.from.node, st.to.node, 0);
+  st.shady = dijkstra(st.from.node, st.to.node, st.k);
+  if (fit && st.shady) fitTo(st.shady.nodes);
+  panel(); draw();
+}
+function card(r, title, key) {
+  const p = r.len ? r.shade/r.len : 1, on = st.sel === key;
+  return `<button type="button" class="card${on ? " sel" : ""}" data-sel="${key}" aria-pressed="${on}">
+    <h3><i class="swatch${on ? "" : " dash"}"></i>${title}</h3>
+    <div class="big">${Math.round(p*100)}%<small>shade</small></div>
+    <div class="bar" role="img" aria-label="${Math.round(p*100)} percent in shade"><i style="width:${p*100}%"></i></div>
+    <div class="kv">${fmtMi(r.len)} · ${mins(r.len)} min walk<br>${Math.round((r.len - r.shade)/WALK/60)} min in direct sun</div>
+    ${on ? "" : `<span class="pickhint">Tap to show on map</span>`}
+  </button>`;
+}
+function panel() {
+  const a = st.shortest, b = st.shady, el = $("result");
+  if (!a || !b) { el.innerHTML = `<p class="verdict">No walkable path found between those points.</p>`; return; }
+  const sunA = (a.len - a.shade)/WALK/60, sunB = (b.len - b.shade)/WALK/60, extra = (b.len - a.len)/WALK/60;
+  let v;
+  if (sun.alt <= 0) v = `It's dark out. Take the shortest way.`;
+  else if (sunA - sunB < 0.5) v = `The shortest route is already about as shady as it gets right now.`;
+  else v = `Detour <b>${extra < 0.5 ? "under 30 sec" : `+${Math.round(extra*10)/10} min`}</b> to cut direct sun from ${sunA.toFixed(1)} to <b>${sunB.toFixed(1)} min</b>.`;
+  el.innerHTML = `<div class="label"><span>${st.from.name} → ${st.to.name}</span></div>
+    <div class="cmp">${card(b, "Shade route", "shady")}${card(a, "Shortest", "short")}</div>
+    <p class="verdict">${v}</p>`;
+  const detour = sun.alt > 0 && sunA - sunB >= 0.5 ? ` · +${Math.max(0.5, Math.round(extra*10)/10)} min detour` : "";
+  const s = st.sel === "short" ? a : b;
+  $("pill").innerHTML = `<i class="dot"></i><b>${Math.round(s.len ? s.shade/s.len*100 : 100)}%</b><span>shade · ${mins(s.len)} min walk${st.sel === "short" ? " · shortest" : detour}</span>`;
+}
+
+// ---------- bus seat ----------
+// Each route is a polyline in travel order with stops at distances along it. The ride is sampled every 12 m:
+// the sun is on the right-hand windows when it lies to the right of the direction of travel, unless that stretch
+// of road is in building or tree shadow (known on campus only; off campus the road is treated as open).
+const BUS_SPEED = 5.4; // m/s, about 12 mph average including stops
+// Off campus the detailed grids stop, so shade along the bus routes is precomputed: for each 12 m sample point, one bit
+// per sun position (24 azimuths x 8 altitudes) for buildings and one for tree crowns, from the same lidar + canopy data.
+const OFF = /*OFF*/null;
+const offIdx = OFF.routes.map(s => Int32Array.from(s.split(","), Number));
+let OFFB = null, offDispImg = null, offBldgCv = null, offTreeCv = null;
+const decodePNG = b64 => new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = "data:image/png;base64," + b64; });
+const offReady = (async () => {
+  const [m, dimg] = await Promise.all([decodePNG(OFF.png), decodePNG(OFF.disp.png)]);
+  if (m) {
+    const c = document.createElement("canvas"); c.width = m.width; c.height = m.height;
+    const x = c.getContext("2d", { willReadFrequently: true }); x.drawImage(m, 0, 0);
+    const px = x.getImageData(0, 0, m.width, m.height).data; c.width = c.height = 0;
+    OFFB = new Uint8Array(px.length/4); for (let i = 0; i < OFFB.length; i++) OFFB[i] = px[4*i];
+  }
+  offDispImg = dimg;
+})();
+function paintOffView() {
+  if (!offDispImg) return;
+  const w = offDispImg.width, h = offDispImg.height;
+  const src = document.createElement("canvas"); src.width = w; src.height = h;
+  const sx = src.getContext("2d", { willReadFrequently: true }); sx.drawImage(offDispImg, 0, 0);
+  const px = sx.getImageData(0, 0, w, h).data; src.width = src.height = 0;
+  const layer = (ch, color) => {
+    const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+    const x = cv.getContext("2d"), id = x.createImageData(w, h);
+    for (let i = 0; i < px.length; i += 4) if (px[i + ch] > 127) id.data[i + 3] = 255;
+    x.putImageData(id, 0, 0); x.globalCompositeOperation = "source-in"; x.fillStyle = color; x.fillRect(0, 0, w, h);
+    return cv;
+  };
+  offBldgCv = layer(0, css("--bldg")); offTreeCv = layer(1, css("--tree"));
+}
+function offShaded(id) {
+  if (sun.alt <= 0) return 1;
+  if (!OFFB) return 0;
+  const azD = (sun.az/rad + 360) % 360, altD = sun.alt/rad, A = OFF.alt;
+  const ai = Math.round(azD/15) % OFF.az.length;
+  let li = 0; for (let i = 1; i < A.length; i++) if (Math.abs(A[i] - altD) < Math.abs(A[li] - altD)) li = i;
+  const col = ai*A.length + li, byte = col >> 3, bit = 7 - (col & 7), base = (id - 1)*OFF.bytes;
+  if ((OFFB[base + byte] >> bit) & 1) return 1;
+  return st.trees && ((OFFB[base + OFF.bytes/2 + byte] >> bit) & 1) ? 1 : 0;
+}
+const BR = BUS.map((r, ri) => {
+  const n = r.line.length/2, cum = new Float64Array(n);
+  for (let i = 1; i < n; i++) cum[i] = cum[i-1] + Math.hypot(r.line[2*i] - r.line[2*i-2], r.line[2*i+1] - r.line[2*i-1]);
+  return { ...r, n, cum, total: cum[n-1], idx: offIdx[ri] };
+});
+function busAt(r, s) {
+  let lo = 0, hi = r.n - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (r.cum[m] <= s) lo = m; else hi = m; }
+  const L = r.cum[hi] - r.cum[lo] || 1, t = Math.min(1, Math.max(0, (s - r.cum[lo])/L));
+  const x0 = r.line[2*lo], y0 = r.line[2*lo+1], x1 = r.line[2*hi], y1 = r.line[2*hi+1];
+  return { x: x0 + (x1 - x0)*t, y: y0 + (y1 - y0)*t, hx: (x1 - x0)/L, hy: (y1 - y0)/L };
+}
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+$("busRoute").innerHTML = BR.map((r, i) => `<option value="${i}">${r.num ? esc(r.num) + " " : ""}${esc(r.name)} · ${esc(r.dir)}</option>`).join("");
+function fillStops(ai, bi) {
+  const r = BR[st.bus.r], opts = r.stops.map((s, i) => `<option value="${i}">${esc(s[1])}</option>`).join("");
+  $("busFrom").innerHTML = opts; $("busTo").innerHTML = opts;
+  st.bus.a = ai; st.bus.b = bi; $("busFrom").value = ai; $("busTo").value = bi;
+}
+$("busRoute").addEventListener("change", e => { st.bus.r = +e.target.value; st.bus.side = null; const n = BR[st.bus.r].stops.length; fillStops(0, BR[st.bus.r].loop ? Math.floor(n/2) : n - 1); busUpdate(true); });
+$("busFrom").addEventListener("change", e => { st.bus.a = +e.target.value; st.bus.side = null; busUpdate(true); });
+$("busTo").addEventListener("change", e => { st.bus.b = +e.target.value; st.bus.side = null; busUpdate(true); });
+st.bus.r = Math.max(0, BR.findIndex(r => r.name === "Howdy" && r.dir.startsWith("MSC")));
+$("busRoute").value = st.bus.r; fillStops(0, BR[st.bus.r].stops.length - 1);
+// Result cards pick which walk route / which bus side is drawn in colour on the map
+$("result").addEventListener("click", e => {
+  const c = e.target.closest("button.card"); if (!c) return;
+  if (c.dataset.sel) { st.sel = c.dataset.sel; panel(); draw(); }
+  else if (c.dataset.side && st.ride) { st.bus.side = c.dataset.side; busPanel(); draw(); }
+});
+document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => {
+  st.tab = b.dataset.tab; document.body.dataset.tab = st.tab;
+  document.querySelectorAll("#tabs button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  if (st.tab === "walk") setPick(null);
+  route(true);
+});
+
+function busUpdate(fit) {
+  const r = BR[st.bus.r], sa = r.stops[st.bus.a][0], sb = r.stops[st.bus.b][0];
+  let ranges;
+  if (sb > sa) ranges = [[sa, sb]];
+  else if (r.loop && st.bus.a !== st.bus.b) ranges = [[sa, r.total], [0, sb]];
+  else { st.ride = null; $("pill").innerHTML = `<i class="dot" style="background:var(--muted)"></i><span>Pick a later stop</span>`; $("result").innerHTML = `<p class="verdict">This bus runs one way. Pick a stop that comes after <b>${esc(r.stops[st.bus.a][1])}</b>.</p>`; draw(); return; }
+  const samples = []; let len = 0, sunL = 0, sunR = 0, shade = 0;
+  const up = sun.alt > 0, sx = Math.sin(sun.az), sy = Math.cos(sun.az);
+  for (const [s0, s1] of ranges) {
+    const n = Math.max(1, Math.ceil((s1 - s0)/12)), ds = (s1 - s0)/n;
+    for (let k = 0; k < n; k++) {
+      const s = s0 + (k + .5)*ds, p = busAt(r, s), pid = r.idx[Math.min(r.idx.length - 1, Math.floor(s/12))];
+      // right-hand normal of the heading is (hy, -hx); its dot with the sun direction says which side faces the sun
+      const side = sx*p.hy - sy*p.hx;
+      let f = "-";
+      if (!up || (pid ? offShaded(pid) : shadedAt(p.x, p.y))) { shade += ds; f = "s"; }
+      else if (side > 0.2) { sunR += ds; f = "R"; }
+      else if (side < -0.2) { sunL += ds; f = "L"; }
+      len += ds; samples.push([p.x, p.y, f]);
+    }
+  }
+  const pick = sunL <= sunR ? "L" : "R";
+  const a = busAt(r, sa), b = busAt(r, sb);
+  const fullLoop = r.loop && st.bus.a === 0 && st.bus.b === r.stops.length - 1;
+  st.ride = { r, ranges, samples, len, sunL, sunR, shade, pick, fullLoop, a: { x: a.x, y: a.y }, b: { x: b.x, y: b.y } };
+  if (fit) fitPts(samples);
+  busPanel(); draw();
+}
+function fitPts(pts) {
+  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9; pts.forEach(p => { x0=Math.min(x0,p[0]); x1=Math.max(x1,p[0]); y0=Math.min(y0,p[1]); y1=Math.max(y1,p[1]); });
+  const pad = Math.min(80, Math.min(W, H)*0.14); view.cx = (x0+x1)/2; view.cy = (y0+y1)/2;
+  view.s = Math.min(4, Math.max(0.05, Math.min((W - pad*2)/Math.max(60, x1-x0), (H - pad*2)/Math.max(60, y1-y0))));
+}
+function busPanel() {
+  // Compare minutes of direct sun per side. A percentage of the whole ride hides the difference, because time with
+  // the sun ahead/behind or with the road in shadow counts as "shade" for both sides.
+  const R = st.ride, el = $("result"), toMin = m => m/BUS_SPEED/60;
+  const rideMin = Math.max(1, Math.round(toMin(R.len))), mL = toMin(R.sunL), mR = toMin(R.sunR);
+  const fmt = m => m < 0.5 ? "0" : m < 10 ? (Math.round(m*2)/2).toString() : Math.round(m).toString();
+  const side = R.pick === "L" ? "left" : "right", other = R.pick === "L" ? "right" : "left";
+  const saved = Math.abs(mL - mR), even = sun.alt <= 0 || saved < Math.max(1, 0.1*rideMin);
+  let v;
+  if (sun.alt <= 0) v = `The sun is down. Sit anywhere.`;
+  else if (R.fullLoop) v = `This is the whole loop. The bus turns all the way around, so both sides end up with about the same sun. Pick the stop where you actually get off.`;
+  else if (even) v = `Either side works. For most of this ride the sun is ahead of or behind the bus, or the road is shaded.`;
+  else v = `Sit on the <b>${side}</b> and get about <b>${fmt(saved)} fewer minutes</b> of direct sun than the ${other} side.`;
+  const selSide = st.bus.side || R.pick;
+  const win = (lab, key, m, isPick) => `<button type="button" class="card${selSide === key ? " sel" : ""}" data-side="${key}" aria-pressed="${selSide === key}">
+    <h3>${lab} windows${isPick ? '<span class="tag">Sit here</span>' : ""}</h3>
+    <div class="big">${fmt(m)}<small>min in sun</small></div>
+    <div class="bar" role="img" aria-label="${Math.round(100*m/rideMin)} percent of the ride in direct sun"><i style="width:${Math.max(0, 100 - 100*m/toMin(R.len))}%"></i></div>
+    <div class="kv">${Math.round(100 - 100*m/toMin(R.len))}% of the ride shaded</div>
+    ${selSide === key ? "" : `<span class="pickhint">Tap to show on map</span>`}
+  </button>`;
+  const cL = css("--maroon"), cS = css("--sun");
+  const lc = even ? css("--muted") : (R.pick === "L" ? cL : cS), rc = even ? css("--muted") : (R.pick === "R" ? cL : cS);
+  el.innerHTML = `<div class="label"><span>${esc(R.r.name)}: ${esc(R.r.stops[st.bus.a][1])} → ${esc(R.r.stops[st.bus.b][1])}</span></div>
+    <div class="seat">
+      <svg viewBox="0 0 58 96" role="img" aria-label="Bus seen from above, front at the top; recommended side highlighted">
+        <path d="M29 2 L37 10 H21 Z" fill="var(--muted)"/>
+        <rect x="9" y="12" width="40" height="80" rx="7" fill="var(--chip)" stroke="var(--line)"/>
+        ${[0,1,2,3,4].map(i => `<rect x="12" y="${20+i*14}" width="9" height="9" rx="2" fill="${lc}"/><rect x="37" y="${20+i*14}" width="9" height="9" rx="2" fill="${rc}"/>`).join("")}
+        ${even ? "" : `<circle cx="${R.pick === "L" ? 16.5 : 41.5}" cy="54" r="3.2" fill="var(--panel)"/>`}
+      </svg>
+      <div><div class="big">${even ? "Either side" : `Sit ${side}`}</div><div class="kv">${fmtMi(R.len)} · about ${rideMin} min ride</div></div>
+    </div>
+    <div class="cmp">${win("Left", "L", mL, !even && R.pick === "L")}${win("Right", "R", mR, !even && R.pick === "R")}</div>
+    <p class="verdict">${v}</p>
+    <p class="hint">"Left" means your left when facing the front of the bus. Uses the sun's position when you board.</p>`;
+  const selM = selSide === "L" ? mL : mR;
+  if (st.bus.side && st.bus.side !== R.pick) $("pill").innerHTML = `<i class="dot" style="background:var(--sun)"></i><b>${st.bus.side === "L" ? "Left" : "Right"} side</b><span>${fmt(selM)} min in sun · ${rideMin} min ride</span>`;
+  else $("pill").innerHTML = even
+    ? `<i class="dot" style="background:var(--muted)"></i><b style="color:var(--ink)">Either side</b><span>${R.fullLoop ? "full loop · pick your stop" : `${rideMin} min ride`}</span>`
+    : `<i class="dot"></i><b>Sit ${side}</b><span>${fmt(saved)} min less sun · ${rideMin} min ride</span>`;
+}
+function drawBus() {
+  const R = st.ride, r = BR[st.bus.r];
+  ctx.lineJoin = ctx.lineCap = "round";
+  ctx.setLineDash([7/view.s, 6/view.s]); ctx.strokeStyle = css("--muted"); ctx.lineWidth = 2.5/view.s;
+  ctx.beginPath(); for (let i = 0; i < r.n; i++) i ? ctx.lineTo(r.line[2*i], r.line[2*i+1]) : ctx.moveTo(r.line[0], r.line[1]); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = css("--panel"); ctx.strokeStyle = css("--ink"); ctx.lineWidth = 1.5/view.s;
+  for (const [s] of r.stops) { const p = busAt(r, s); ctx.beginPath(); ctx.arc(p.x, p.y, 4/view.s, 0, Math.PI*2); ctx.fill(); ctx.stroke(); }
+  if (!R) return;
+  const cShade = css("--maroon"), cSun = css("--sun");
+  ctx.strokeStyle = css("--panel"); ctx.lineWidth = 9/view.s;
+  ctx.beginPath(); R.samples.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke();
+  ctx.lineWidth = 6/view.s;
+  for (let i = 1; i < R.samples.length; i++) {
+    const a = R.samples[i-1], b = R.samples[i];
+    if (Math.hypot(b[0]-a[0], b[1]-a[1]) > 40) continue; // loop wrap
+    ctx.strokeStyle = b[2] === (st.bus.side || R.pick) ? cSun : cShade;
+    ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+  }
+}
+
+// ---------- drawing ----------
+function resize() {
+  const r = canvas.getBoundingClientRect(); DPR = window.devicePixelRatio || 1;
+  W = r.width; H = r.height; canvas.width = Math.round(W*DPR); canvas.height = Math.round(H*DPR); draw();
+}
+function fitTo(nodes) {
+  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9; nodes.forEach(n => { x0=Math.min(x0,NX[n]); x1=Math.max(x1,NX[n]); y0=Math.min(y0,NY[n]); y1=Math.max(y1,NY[n]); });
+  const pad = Math.min(80, Math.min(W, H)*0.14); view.cx = (x0+x1)/2; view.cy = (y0+y1)/2;
+  view.s = Math.min(4, Math.max(0.25, Math.min((W - pad*2)/Math.max(60, x1-x0), (H - pad*2)/Math.max(60, y1-y0))));
+}
+const toScreen = (x, y) => [(x - view.cx)*view.s + W/2, -(y - view.cy)*view.s + H/2];
+const toWorld = (sx, sy) => ({ x: (sx - W/2)/view.s + view.cx, y: -(sy - H/2)/view.s + view.cy });
+function worldTf() { ctx.setTransform(view.s*DPR, 0, 0, -view.s*DPR, (W/2 - view.cx*view.s)*DPR, (H/2 + view.cy*view.s)*DPR); }
+
+function drawRoute(r, shaded) {
+  ctx.lineJoin = ctx.lineCap = "round";
+  if (!shaded) {
+    ctx.setLineDash([7/view.s, 6/view.s]); ctx.strokeStyle = css("--muted"); ctx.lineWidth = 3/view.s;
+    ctx.beginPath(); r.nodes.forEach((n,i) => i ? ctx.lineTo(NX[n],NY[n]) : ctx.moveTo(NX[n],NY[n])); ctx.stroke(); ctx.setLineDash([]); return;
+  }
+  ctx.strokeStyle = css("--panel"); ctx.lineWidth = 8/view.s;
+  ctx.beginPath(); r.nodes.forEach((n,i) => i ? ctx.lineTo(NX[n],NY[n]) : ctx.moveTo(NX[n],NY[n])); ctx.stroke();
+  const cShade = css("--maroon"), cSun = css("--sun"); ctx.lineWidth = 5/view.s; ctx.lineCap = "butt";
+  for (let i = 1; i < r.nodes.length; i++) {
+    const a = r.nodes[i-1], b = r.nodes[i], L = Math.hypot(NX[b]-NX[a], NY[b]-NY[a]), n = Math.max(1, Math.ceil(L/2));
+    for (let k = 0; k < n; k++) {
+      const t0 = k/n, t1 = (k+1)/n, tm = (k+.5)/n;
+      ctx.strokeStyle = shadedAt(NX[a]+(NX[b]-NX[a])*tm, NY[a]+(NY[b]-NY[a])*tm) ? cShade : cSun;
+      ctx.beginPath(); ctx.moveTo(NX[a]+(NX[b]-NX[a])*t0, NY[a]+(NY[b]-NY[a])*t0); ctx.lineTo(NX[a]+(NX[b]-NX[a])*t1, NY[a]+(NY[b]-NY[a])*t1); ctx.stroke();
+    }
+  }
+}
+function drawPin(p, label, color) {
+  const [x, y] = toScreen(p.x, p.y);
+  ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(x, y - 16, 11, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x-5, y-7); ctx.lineTo(x, y); ctx.lineTo(x+5, y-7); ctx.fill();
+  ctx.fillStyle = "#fff"; ctx.font = "600 11px 'IBM Plex Mono', monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(label, x, y - 16);
+}
+function draw() {
+  if (!W) return;
+  ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = css("--ground"); ctx.fillRect(0,0,canvas.width,canvas.height);
+  if (offBldgCv) { // off-campus context along the bus routes (8 m cells)
+    ctx.save(); ctx.setTransform(DPR,0,0,DPR,0,0); ctx.imageSmoothingEnabled = view.s < 0.12;
+    const [ox, oy] = toScreen(OFF.disp.x0, OFF.disp.y1), ow = OFF.disp.w*OFF.disp.res*view.s, oh = OFF.disp.h*OFF.disp.res*view.s;
+    if (st.trees) { ctx.globalAlpha = .55; ctx.drawImage(offTreeCv, ox, oy, ow, oh); }
+    ctx.globalAlpha = .9; ctx.drawImage(offBldgCv, ox, oy, ow, oh); ctx.restore();
+  }
+  worldTf();
+  ctx.strokeStyle = css("--walk"); ctx.lineWidth = Math.max(1.6/view.s, 2.2); ctx.lineCap = "round"; ctx.stroke(walkPath);
+  // shadows
+  ctx.save(); ctx.setTransform(DPR,0,0,DPR,0,0); ctx.globalAlpha = +css("--shadow-alpha");
+  const [sx, sy] = toScreen(minX, maxY); ctx.imageSmoothingEnabled = true; ctx.drawImage(mask, sx, sy, GW*view.s, GH*view.s); ctx.restore();
+  if (canopyView && st.trees) {
+    ctx.save(); ctx.setTransform(DPR,0,0,DPR,0,0); ctx.globalAlpha = .55;
+    const [tx, ty] = toScreen(CAN.x0, CAN.y1); ctx.drawImage(canopyView, tx, ty, CAN.w*CAN.res*view.s, CAN.h*CAN.res*view.s); ctx.restore();
+  }
+  worldTf();
+  ctx.fillStyle = css("--bldg"); ctx.strokeStyle = css("--bldg-edge"); ctx.lineWidth = 1/view.s;
+  for (const b of B) { ctx.fill(b.path); ctx.stroke(b.path); }
+  if (st.tab === "bus") drawBus();
+  else {
+    const [on, off] = st.sel === "short" ? [st.shortest, st.shady] : [st.shady, st.shortest];
+    if (off) drawRoute(off, false); if (on) drawRoute(on, true);
+  }
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  // labels
+  if (view.s > 0.55) {
+    ctx.font = "500 11px 'IBM Plex Sans', sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    const placed = [], ink = css("--ink"), bg = css("--ground");
+    for (const b of LABELS) {
+      if (view.s < 1.1 && b.area < 9000) continue;
+      const [x, y] = toScreen(b.cx, b.cy); if (x < -50 || y < -20 || x > W+50 || y > H+20) continue;
+      const w = ctx.measureText(b.name).width;
+      if (placed.some(p => Math.abs(p[0]-x) < (p[2]+w)/2 + 6 && Math.abs(p[1]-y) < 16)) continue;
+      placed.push([x, y, w]);
+      ctx.lineWidth = 3; ctx.strokeStyle = bg; ctx.strokeText(b.name, x, y); ctx.fillStyle = ink; ctx.fillText(b.name, x, y);
+    }
+  }
+  if (st.tab === "bus") { if (st.ride) { drawPin(st.ride.a, "A", "#2F6B4F"); drawPin(st.ride.b, "B", css("--maroon")); } return; }
+  if (st.from) drawPin(st.from, "A", "#2F6B4F");
+  if (st.to) drawPin(st.to, "B", css("--maroon"));
+}
+
+// ---------- interaction ----------
+const ptrs = new Map(); let dragMoved = false, pinchD = 0;
+canvas.addEventListener("pointerdown", e => { canvas.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.offsetX, e.offsetY]); dragMoved = false; canvas.classList.add("dragging");
+  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinchD = Math.hypot(a[0]-b[0], a[1]-b[1]); } });
+canvas.addEventListener("pointermove", e => {
+  if (!ptrs.has(e.pointerId)) return; const prev = ptrs.get(e.pointerId), cur = [e.offsetX, e.offsetY];
+  if (ptrs.size === 1) { const dx = cur[0]-prev[0], dy = cur[1]-prev[1]; if (Math.abs(dx)+Math.abs(dy) > 0) { if (Math.abs(dx)+Math.abs(dy) > 2) dragMoved = true; view.cx -= dx/view.s; view.cy += dy/view.s; } }
+  ptrs.set(e.pointerId, cur);
+  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()], d = Math.hypot(a[0]-b[0], a[1]-b[1]); if (pinchD) zoomAt((a[0]+b[0])/2, (a[1]+b[1])/2, d/pinchD); pinchD = d; dragMoved = true; }
+  draw();
+});
+const end = e => { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinchD = 0; if (!ptrs.size) canvas.classList.remove("dragging"); };
+canvas.addEventListener("pointerup", e => {
+  end(e); if (dragMoved) return;
+  const w = toWorld(e.offsetX, e.offsetY);
+  let which = st.pick;
+  if (!which || st.tab === "bus") return;
+  let idx = -1;
+  for (const b of B) { if (!b.name) continue; if (pointInPoly(w.x, w.y, b.pts)) { idx = byName(b.name); break; } }
+  setEnd(which, idx, w); setPick(which); route();
+});
+canvas.addEventListener("pointercancel", end);
+function pointInPoly(x, y, p) { let c = false; for (let i = 0, j = p.length-1; i < p.length; j = i++) { if ((p[i][1] > y) !== (p[j][1] > y) && x < (p[j][0]-p[i][0])*(y-p[i][1])/(p[j][1]-p[i][1]) + p[i][0]) c = !c; } return c; }
+function zoomAt(sx, sy, f) { const w = toWorld(sx, sy); view.s = Math.min(6, Math.max(0.05, view.s*f)); view.cx = w.x - (sx - W/2)/view.s; view.cy = w.y + (sy - H/2)/view.s; }
+canvas.addEventListener("wheel", e => { e.preventDefault(); zoomAt(e.offsetX, e.offsetY, Math.exp(-e.deltaY*0.0015)); draw(); }, { passive: false });
+$("zin").onclick = () => { zoomAt(W/2, H/2, 1.4); draw(); }; $("zout").onclick = () => { zoomAt(W/2, H/2, 1/1.4); draw(); };
+
+const retheme = () => { paintCanopyView(); paintOffView(); renderShadows(); draw(); };
+$("trees").addEventListener("change", e => { st.trees = e.target.checked; updateSun(); route(); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", retheme);
+new MutationObserver(retheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+new ResizeObserver(resize).observe($("mapwrap"));
+
+// ---------- my location ----------
+// Works on the standalone site; inside a sandboxed viewer the browser refuses and the message says so.
+const KXJ = Math.cos(LAT0*rad)*111320, KYJ = 110574;
+function locate(cb) {
+  if (!("geolocation" in navigator)) return cb(null, "This browser can't share your location.");
+  navigator.geolocation.getCurrentPosition(
+    p => cb({ x: (p.coords.longitude - LON0)*KXJ, y: (p.coords.latitude - LAT0)*KYJ }),
+    e => cb(null, e.code === 1 ? "Location is blocked. Allow it for this site in your browser settings, or pick from the list." : "Couldn't get your location. Try again, or pick from the list."),
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 });
+}
+function geoMsg(id, text) { const el = $(id); el.textContent = text || ""; el.hidden = !text; }
+$("geoWalk").onclick = () => {
+  geoMsg("geoWalkMsg", "Finding you…");
+  locate((pt, err) => {
+    if (!pt) return geoMsg("geoWalkMsg", err);
+    if (pt.x < minX || pt.x > maxX || pt.y < minY || pt.y > maxY) return geoMsg("geoWalkMsg", "You're outside the campus map. Pick a start from the list.");
+    geoMsg("geoWalkMsg", ""); setEnd("from", -1, pt); route(true);
+  });
+};
+$("geoBus").onclick = () => {
+  geoMsg("geoBusMsg", "Finding you…");
+  locate((pt, err) => {
+    if (!pt) return geoMsg("geoBusMsg", err);
+    // nearest stop across every route; switch route if a different one is closer
+    let best = null;
+    BR.forEach((r, ri) => r.stops.forEach((s, si) => { const p = busAt(r, s[0]), d = Math.hypot(p.x - pt.x, p.y - pt.y); if (!best || d < best.d) best = { ri, si, d }; }));
+    if (!best || best.d > 1600) return geoMsg("geoBusMsg", "No bus stop within a mile of you.");
+    const same = best.ri === st.bus.r;
+    if (!same) { st.bus.r = best.ri; $("busRoute").value = best.ri; }
+    const n = BR[best.ri].stops.length, to = BR[best.ri].loop ? (best.si + Math.floor(n/2)) % n : Math.min(n - 1, best.si + Math.max(1, Math.floor((n - best.si)/2)));
+    st.bus.side = null; fillStops(best.si, best.si === n - 1 && !BR[best.ri].loop ? best.si : to);
+    geoMsg("geoBusMsg", `Nearest stop: ${BR[best.ri].stops[best.si][1]} (${Math.round(best.d*3.281)} ft away)${same ? "" : `, on ${BR[best.ri].num} ${BR[best.ri].name}`}. Now pick where you get off.`);
+    busUpdate(true);
+  });
+};
+if (window.__SITE__ && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+
+// ---------- boot ----------
+await Promise.all([canopyReady, heightsReady, offReady]); paintCanopyView(); paintOffView();
+setNow();
+{ const [y,m,d] = st.date.split("-").map(Number); const ms = Date.UTC(y,m-1,d,Math.floor(st.min/60),st.min%60) + centralOffset(y,m,d)*3600e3;
+  if (sunPos(ms, LAT0, LON0).alt < 10*rad) { st.min = 870; $("time").value = 870; } }
+setEnd("from", byName("Memorial Student Center")); setEnd("to", byName("Zachry Engineering Education Complex"));
+updateSun();
+const r0 = canvas.getBoundingClientRect(); W = r0.width; H = r0.height;
+route(true); resize();
+if (document.fonts) document.fonts.ready.then(draw);
+})();
+</script>
